@@ -1,0 +1,370 @@
+/* ============================================================
+   Городские птицы Саратова — стили
+   Шрифт заголовков: Century Gothic с близкими запасными.
+   ============================================================ */
+
+:root {
+  --bg: #ffe694;
+  --ink: #1a1a1a;
+  --beige: #d9c690;          /* стрелки навигации */
+  --beige-dark: #c9b27a;
+  --panel: #e9e4d4;          /* подложка аудиоплеера */
+  --poster-ratio: 1847 / 2584;
+  --maxw: 1400px;
+  --geom: "Century Gothic", "Jost", "Futura", "Avenir Next", "Trebuchet MS", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--geom);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+img { display: block; }
+
+/* ---------------- Шапка ---------------- */
+.site-header {
+  padding: 18px 16px 8px;
+  max-width: var(--maxw);
+  width: 100%;
+  margin: 0 auto;
+}
+.site-header__home {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+.site-title {
+  font-family: var(--geom);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  line-height: 1.04;
+  font-size: clamp(26px, 7vw, 56px);
+  margin: 0;
+  max-width: 78%;
+}
+.site-logo {
+  width: clamp(42px, 9vw, 72px);
+  height: auto;
+  flex: 0 0 auto;
+}
+
+/* ---------------- Основная область ---------------- */
+.app {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 10px 16px 40px;
+}
+
+/* ---------------- Постер-плитка ---------------- */
+.poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--poster-ratio);
+  overflow: hidden;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 16px rgba(60, 45, 0, 0.18);
+  cursor: pointer;
+  text-decoration: none;
+}
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------------- Галерея (мобильная сетка по умолчанию) ---------------- */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+/* ---------------- Десктоп/ноутбук: ровная сетка 6 в ряд ---------------- */
+@media (min-width: 1000px) {
+  .gallery {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+  }
+  .gallery .poster {
+    box-shadow: 0 10px 24px rgba(60, 45, 0, 0.22);
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+                box-shadow 0.3s ease;
+    will-change: transform;
+  }
+  /* Лёгкое «приподнимание» постера при наведении. */
+  .gallery .poster:hover,
+  .gallery .poster:focus-visible {
+    transform: translateY(-10px) scale(1.04);
+    box-shadow: 0 26px 46px rgba(40, 30, 0, 0.34);
+    z-index: 5;
+    outline: none;
+  }
+}
+
+/* ---------------- Страница птицы ---------------- */
+.app--detail {
+  max-width: 620px;
+}
+.detail {
+  display: flex;
+  flex-direction: column;
+}
+/* Звук + описание в одном блоке.
+   Телефон: звук над описанием. Десктоп: описание над звуком (см. медиазапрос). */
+.detail__info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Десктоп: три колонки — постер | описание+звук | рекомендации (как на макете).
+   Высота постера ограничена вьюпортом, а сетка превью подстраивается под неё,
+   чтобы вся страница умещалась в один экран без прокрутки. */
+@media (min-width: 1000px) {
+  .app--detail { max-width: var(--maxw); }
+  .detail {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 36px;
+    /* опорная высота: постер и колонка рекомендаций равны ей */
+    --stage-h: min(70vh, 44vw, 640px);
+  }
+
+  .detail__stage {
+    flex: 0 0 auto;
+    padding: 0 50px;          /* в этих полях стоят стрелки, вне постера */
+  }
+  .detail__poster {
+    height: var(--stage-h);
+    width: auto;
+    max-width: none;
+    aspect-ratio: var(--poster-ratio);
+  }
+  .nav-arrow { width: 46px; height: 46px; }
+  .nav-arrow svg { width: 25px; height: 25px; }
+  .nav-arrow--prev { left: 2px; }
+  .nav-arrow--next { right: 2px; }
+
+  .detail__info {
+    flex: 1 1 auto;
+    min-width: 0;
+    align-self: stretch;
+  }
+  .detail__info > .detail__desc { order: 1; }
+  .detail__info > .audio { order: 2; width: 100%; max-width: 540px; margin: 28px 0 0; }
+  .detail__info .section-title { margin-top: 0; }
+
+  /* Ширина колонки рекомендаций подобрана так, чтобы 12 постеров ЦЕЛИКОМ
+     (без обрезки, в исходных пропорциях) уместились в 4 ряда по высоте
+     постера. Множитель 3*1847/2584/4 = три колонки × отношение сторон ÷ 4 ряда. */
+  .detail__suggest {
+    flex: 0 0 calc((var(--stage-h) - 100px) * 3 * 1847 / 2584 / 4 + 20px);
+  }
+  .detail__suggest .section-title {
+    margin: 0 0 14px;
+    font-size: clamp(18px, 1.7vw, 22px);
+  }
+  .detail__suggest .suggest-grid { gap: 10px; }
+}
+
+/* Постер со стрелками */
+.detail__stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* боковые отступы — место для стрелок, чтобы они не налезали на постер */
+  padding: 6px 48px 4px;
+}
+.detail__poster {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: var(--poster-ratio);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(60, 45, 0, 0.32);
+  background: rgba(0, 0, 0, 0.04);
+}
+.detail__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.42s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.42s ease;
+}
+
+/* Стрелки навигации */
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: var(--beige);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(60, 45, 0, 0.3);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.nav-arrow:hover { background: var(--beige-dark); }
+.nav-arrow:active { transform: translateY(-50%) scale(0.92); }
+.nav-arrow svg { width: 24px; height: 24px; }
+/* стрелки стоят в боковых отступах stage, вне поля постера */
+.nav-arrow--prev { left: -5px; }
+.nav-arrow--next { right: -5px; }
+
+/* Анимация смены постера */
+.detail__poster img.slide-from-right { transform: translateX(45px); opacity: 0; }
+.detail__poster img.slide-from-left  { transform: translateX(-45px); opacity: 0; }
+.detail__poster img.slide-active     { transform: translateX(0); opacity: 1; }
+.fade-in { animation: fadeIn 0.42s ease both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------------- Аудиоплеер ---------------- */
+.audio {
+  margin: 16px auto 6px;
+  width: 100%;
+  max-width: 460px;
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.audio__btn {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+.audio__btn:hover { transform: scale(1.06); }
+.audio__btn:active { transform: scale(0.94); }
+.audio__btn svg { width: 22px; height: 22px; fill: currentColor; }
+.audio__btn--disabled {
+  background: #b9b29c;
+  cursor: default;
+}
+
+/* Псевдоволна */
+.audio__track {
+  flex: 1 1 auto;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.audio__bars {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.audio__bars span {
+  flex: 1 1 auto;
+  min-width: 2px;
+  height: 40%;
+  background: #b9b29c;
+  border-radius: 2px;
+  transition: background 0.08s linear;
+}
+.audio__bars span.is-played { background: var(--ink); }
+.audio__time {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: #5a5333;
+  min-width: 34px;
+  text-align: right;
+}
+.audio--empty { justify-content: flex-start; }
+.audio__empty-text {
+  font-size: 14px;
+  color: #6a6244;
+}
+
+/* ---------------- Описание ---------------- */
+.section-title {
+  font-family: var(--geom);
+  font-weight: 700;
+  font-size: clamp(22px, 5.5vw, 30px);
+  margin: 26px 0 10px;
+}
+.detail__latin {
+  margin: 0 0 10px;
+  font-style: italic;
+  color: #6a6244;
+  font-size: 15px;
+}
+.detail__text {
+  margin: 0;
+  font-size: clamp(16px, 4.3vw, 18px);
+  line-height: 1.55;
+  max-width: 60ch;
+}
+
+/* ---------------- Также может понравиться ---------------- */
+.detail__suggest { margin-top: 8px; }
+.suggest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* ---------------- Подвал ---------------- */
+.site-footer {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 26px 16px 30px;
+  font-size: 15px;
+  color: #4a4326;
+}
+
+/* ---------------- Доступность ---------------- */
+.poster:focus-visible,
+.nav-arrow:focus-visible,
+.audio__btn:focus-visible {
+  outline: 3px solid #2b6cb0;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
