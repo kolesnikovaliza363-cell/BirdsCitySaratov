@@ -231,8 +231,21 @@
       goToBird(next.id, { dir: "next", keepScroll: true });
     });
 
-    // --- Аудио ---
-    var audioPlayer = buildAudioPlayer(bird);
+    // --- Аудио --- (у птицы может быть несколько записей с подписями)
+    var audioPlayer;
+    if (bird.audios && bird.audios.length) {
+      audioPlayer = document.createElement("div");
+      audioPlayer.className = "audio-group";
+      bird.audios.forEach(function (a) {
+        var label = document.createElement("p");
+        label.className = "audio__label";
+        label.textContent = a.label;
+        audioPlayer.appendChild(label);
+        audioPlayer.appendChild(buildAudioPlayer({ audio: a.file }));
+      });
+    } else {
+      audioPlayer = buildAudioPlayer(bird);
+    }
 
     // --- Описание ---
     var descSection = document.createElement("section");
@@ -305,8 +318,10 @@
   }
 
   function cleanupAudio() {
-    var existing = app.querySelector(".audio");
-    if (existing && existing.__cleanup) existing.__cleanup();
+    var players = app.querySelectorAll(".audio");
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].__cleanup) players[i].__cleanup();
+    }
     if (window.__currentAudio) { try { window.__currentAudio.pause(); } catch (e) {} }
   }
 
